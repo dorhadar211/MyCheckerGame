@@ -23,9 +23,10 @@ public class Game{
         }
     }
 
-    public MoveFeedback playerMove(int fromPos, int dx, int dy){
-        int toPos = fromPos + dx + BoardState.SIDE_LENGTH*dy;
-        if (toPos > getState().state.length){
+    public MoveFeedback playerMove(int fromPosX,int fromPosY, int dx, int dy){
+        int toPosX = fromPosX+dx;
+        int toPosY = fromPosY+dy;
+        if (toPosX > getState().SIDE_LENGTH || toPosY > getState().SIDE_LENGTH ||toPosX < 0 || toPosY < 0){
             return MoveFeedback.NOT_ON_BOARD;
         }
         // check for forced jumped
@@ -33,7 +34,7 @@ public class Game{
         boolean jumps = jumpSuccessors.size() > 0;
         if (jumps){
             for (BoardState succ : jumpSuccessors){
-                if (succ.getFromPos() == fromPos && succ.getToPos() == toPos){
+                if ((succ.getFromPosX() == fromPosX && succ.getFromPosY() == fromPosY) && (succ.getToPosX() == toPosX && succ.getToPosY() == toPosY)){
                     updateState(succ);
                     return MoveFeedback.SUCCESS;
                 }
@@ -45,13 +46,13 @@ public class Game{
             return MoveFeedback.NOT_DIAGONAL;
         }
         // check for move onto piece
-        if (this.getState().state[toPos] != null){
+        if (this.getState().state[toPosY][toPosX] != null){
             return MoveFeedback.NO_FREE_SPACE;
         }
         // check for non-jump moves
-        ArrayList<BoardState> nonJumpSuccessors = this.state.peek().getSuccessors(fromPos, false);
+        ArrayList<BoardState> nonJumpSuccessors = this.state.peek().getSuccessors(fromPosY,fromPosX, false);
         for (BoardState succ : nonJumpSuccessors){
-            if (succ.getFromPos() == fromPos && succ.getToPos() == toPos){
+            if ((succ.getFromPosX() == fromPosX && succ.getFromPosY() == fromPosY) && (succ.getToPosX() == toPosX && succ.getToPosY() == toPosY)){
                 updateState(succ);
                 return MoveFeedback.SUCCESS;
             }
@@ -64,7 +65,7 @@ public class Game{
         return MoveFeedback.UNKNOWN_INVALID;
     }
 
-    public MoveFeedback moveFeedbackClick(int pos){
+    public MoveFeedback moveFeedbackClick(){
         ArrayList<BoardState> jumpSuccessors = this.state.peek().getSuccessors(true);
         if (jumpSuccessors.size() > 0){
             return MoveFeedback.FORCED_JUMP;
@@ -75,8 +76,8 @@ public class Game{
 
     }
 
-    public ArrayList<BoardState> getValidMoves(int pos) {
-        return state.peek().getSuccessors(pos);
+    public ArrayList<BoardState> getValidMoves(int posX,int posY) {
+        return state.peek().getSuccessors(posY,posX);
     }
 
     public void aiMove(){

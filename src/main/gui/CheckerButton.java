@@ -19,7 +19,8 @@ import java.io.IOException;
  */
 public class CheckerButton extends JButton{
 
-    private int position;
+    private int positionX;
+    private int positionY;
     private Piece piece;
     private Game game;
     // drag drop
@@ -28,46 +29,23 @@ public class CheckerButton extends JButton{
     int screenX = 0;
     int screenY = 0;
 
-    public CheckerButton(int position, Piece piece, GUI gui){
+    public CheckerButton(int positionX,int positionY, Piece piece, GUI gui){
         super();
-        this.position = position;
+        this.positionX = positionX;
+        this.positionY = positionY;
         this.piece = piece;
         this.game = game;
         this.setBorder(BorderFactory.createEmptyBorder());
         this.setContentAreaFilled(false);
         setIcon(piece);
-        if (piece.getPlayer() == Player.HUMAN && Settings.dragDrop){
-            this.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent mouseEvent) {
-                    screenX = mouseEvent.getXOnScreen();
-                    screenY = mouseEvent.getYOnScreen();
-                    X = getX();
-                    Y = getY();
-                }
-                @Override
-                public void mouseReleased(MouseEvent mouseEvent){
-                    int deltaX = mouseEvent.getXOnScreen() - screenX;
-                    int deltaY = mouseEvent.getYOnScreen() - screenY;
-                    int dx = (int) Math.round((double)deltaX / (double) main.gui.Settings.squareSize);
-                    int dy = (int) Math.round((double)deltaY / (double) main.gui.Settings.squareSize);
-                    gui.onMouseRelease(position, dx, dy);
-                }
-            });
-            this.addMouseMotionListener(new MouseMotionAdapter() {
-                @Override
-                public void mouseDragged(MouseEvent mouseEvent) {
-                    int deltaX = mouseEvent.getXOnScreen() - screenX;
-                    int deltaY = mouseEvent.getYOnScreen() - screenY;
-                    setLocation(X + deltaX, Y + deltaY);
-                }
-            });
-        }
     }
 
 
-    public int getPosition() {
-        return position;
+    public int getPositionX() {
+        return positionX;
+    }
+    public int getPositionY() {
+        return positionY;
     }
 
     public Piece getPiece() {

@@ -17,13 +17,13 @@ public class GUI extends JFrame{
 
     private Game game;
     private ArrayList<BoardState> possibleMoves;
-    private SquarePanel[] squares;
+    private SquarePanel[][] squares;
     private JPanel checkerboardPanel;
     private JPanel contentPane;
     private JTextArea textBox;
     // hint feature
     private BoardState hintMove;
-    private List<Integer> helpMoves;
+    private List<ArrayList<Integer>> helpMoves;
     private HashMap<Integer, Integer> difficultyMapping;
 
     public GUI(){
@@ -135,30 +135,23 @@ public class GUI extends JFrame{
     }
 
     private void addSquares(){
-        squares = new SquarePanel[game.getState().NO_SQUARES];
-        int fromPos = -1;
-        int toPos = -1;
-        if(hintMove != null){
-            fromPos = hintMove.getFromPos();
-            toPos = hintMove.getToPos();
-        }
+        squares = new SquarePanel[game.getState().SIDE_LENGTH][game.getState().SIDE_LENGTH];
         GridBagConstraints c = new GridBagConstraints();
-        for (int i = 0; i < game.getState().NO_SQUARES; i++){
-            c.gridx = i % game.getState().SIDE_LENGTH;
-            c.gridy = i / game.getState().SIDE_LENGTH;
-            squares[i] = new SquarePanel(c.gridx, c.gridy);
-            if (i == fromPos){
-                squares[i].setHighlighted();
-            }
-            if(i == toPos){
-                squares[i].setHighlighted();
-            }
-            if (helpMoves != null){
-                if (helpMoves.contains(i)){
-                    squares[i].setHighlighted();
+        for (int i = 0; i < game.getState().SIDE_LENGTH; i++){
+            for (int j = 0; j < game.getState().SIDE_LENGTH; j++) {
+                c.gridx = j;
+                c.gridy = i;
+                squares[i][j] = new SquarePanel(c.gridx, c.gridy);
+                if (helpMoves != null){
+                    ArrayList<Integer> check = new ArrayList<Integer>();
+                    check.add(i);
+                    check.add(j);
+                    if (helpMoves.contains(check)){
+                        squares[i][j].setHighlighted();
+                    }
                 }
+                checkerboardPanel.add(squares[i][j], c);
             }
-            checkerboardPanel.add(squares[i], c);
         }
     }
 
@@ -168,19 +161,21 @@ public class GUI extends JFrame{
      */
     private void addPieces(){
         GridBagConstraints c = new GridBagConstraints();
-        for (int i = 0; i < game.getState().NO_SQUARES; i++){
-            c.gridx = i % game.getState().SIDE_LENGTH;
-            c.gridy = i / game.getState().SIDE_LENGTH;
-            if(game.getState().getPiece(i) != null){
-                Piece piece = game.getState().getPiece(i);
-                CheckerButton button = new CheckerButton(i, piece, this);
-                button.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        onPieceClick(actionEvent);
-                    }
-                });
-                checkerboardPanel.add(button, c);
+        for (int i = 0; i < game.getState().SIDE_LENGTH; i++){
+            for (int j =0; j< game.getState().SIDE_LENGTH;j++){
+                c.gridx = j;
+                c.gridy = i;
+                if(game.getState().getPiece(i,j) != null){
+                    Piece piece = game.getState().getPiece(i,j);
+                    CheckerButton button = new CheckerButton(j,i, piece, this);
+                    button.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent actionEvent) {
+                            onPieceClick(actionEvent);
+                        }
+                    });
+                    checkerboardPanel.add(button, c);
+                }
             }
         }
     }
@@ -190,7 +185,8 @@ public class GUI extends JFrame{
      */
     private void addGhostButtons(){
         for (BoardState state : possibleMoves){
-            int newPos = state.getToPos();
+            int newPosX = state.getToPosX();
+            int newPosY = state.getToPosY();
             GhostButton button = new GhostButton(state);
             button.addActionListener(new ActionListener() {
                 @Override
@@ -198,7 +194,7 @@ public class GUI extends JFrame{
                     onGhostButtonClick(actionEvent);
                 }
             });
-            squares[newPos].add(button);
+            squares[newPosY][newPosX].add(button);
         }
     }
 
@@ -306,19 +302,6 @@ public class GUI extends JFrame{
 
     /***************************************************************/
     /*********************** ON CLICK METHODS **********************/
-
-    public void onMouseRelease(int position, int dx, int dy){
-        MoveFeedback feedback = game.playerMove(position, dx, dy);
-        if (feedback == MoveFeedback.SUCCESS){
-            updateCheckerBoard();
-            aiMove();
-        }
-        else{
-            updateCheckerBoard();
-            System.out.println(feedback.toString());
-        }
-    }
-
     private void onHintClick(){
         if (!game.isGameOver()){
             AI ai = new AI(10, Player.HUMAN);
@@ -330,7 +313,14 @@ public class GUI extends JFrame{
 
     private void onHelpMovablesClick(){
         hintMove = null;
-        helpMoves = game.getState().getSuccessors().stream().map(x -> x.getFromPos()).collect(Collectors.toList());
+        helpMoves = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> temp;
+        for(BoardState obj : game.getState().getSuccessors()){
+            temp = new ArrayList<>();
+            temp.add(obj.getFromPosY());
+            temp.add(obj.getFromPosX());
+            helpMoves.add(temp);
+        }
         updateCheckerBoard();
     }
 
@@ -352,12 +342,13 @@ public class GUI extends JFrame{
     private void onPieceClick(ActionEvent actionEvent){
         if(game.getTurn() == Player.HUMAN ){
             CheckerButton button = (CheckerButton) actionEvent.getSource();
-            int pos = button.getPosition();
+            int posX = button.getPositionX();
+            int posY = button.getPositionY();
             if(button.getPiece().getPlayer() == Player.HUMAN){
-                possibleMoves = game.getValidMoves(pos);
+                possibleMoves = game.getValidMoves(posX,posY);
                 updateCheckerBoard();
                 if (possibleMoves.size() == 0){
-                    MoveFeedback feedback = game.moveFeedbackClick(pos);
+                    MoveFeedback feedback = game.moveFeedbackClick();
                     updateText(feedback.toString());
                     if (feedback == MoveFeedback.FORCED_JUMP){
                         // show movable jump pieces
