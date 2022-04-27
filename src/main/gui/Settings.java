@@ -4,7 +4,7 @@ import main.game.Player;
 
 public class Settings{
 
-    public static Colour AIcolour = Colour.BLACK;
+    public static pColor AIpColor = pColor.BLACK;
     public static boolean helpMode = true;
     public static boolean hintMode = false;
     public static boolean dragDrop = false;
@@ -16,17 +16,17 @@ public class Settings{
     public static int ghostButtonHeight = 5*squareSize/6;
 
     /**
-     * Gets the correct colour (black/white) for the given player
+     * Gets the correct pColor (black/white) for the given player
      * @param player
      * @return
      */
-    public static Colour getColour(Player player){
-        Colour result = null;
+    public static pColor getpColor(Player player){
+        pColor result = null;
         if (player == Player.AI){
-            result = Settings.AIcolour;
+            result = Settings.AIpColor;
         }
         else if (player == Player.HUMAN){
-            result = Settings.AIcolour.getOpposite();
+            result = Settings.AIpColor.getOpposite();
         }
         if(result == null){
             throw new RuntimeException("Null player has no piece.");

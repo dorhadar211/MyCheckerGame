@@ -54,9 +54,9 @@ public class CheckerButton extends JButton{
 
     private void setIcon(Piece piece){
         BufferedImage buttonIcon = null;
-        Colour colour = Settings.getColour(piece.getPlayer());
+        pColor pcolor = Settings.getpColor(piece.getPlayer());
         try {
-            if (colour == Colour.BLACK) {
+            if (pcolor == pColor.BLACK) {
                 if (piece.isKing()) {
                     buttonIcon = ImageIO.read(new File("images/blackking.png"));
                 } else {

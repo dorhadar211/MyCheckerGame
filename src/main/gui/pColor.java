@@ -1,11 +1,11 @@
 package main.gui;
 
-public enum Colour {
+public enum pColor {
     WHITE,
     BLACK;
 
-    public Colour getOpposite(){
-        Colour result = null;
+    public pColor getOpposite(){
+        pColor result = null;
         if (this == WHITE){
             result = BLACK;
         }
