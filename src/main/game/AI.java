@@ -59,7 +59,7 @@ public class AI {
     }
 
     /**
-     * Chooses a successor state randomly.
+     * Chooses a successor state randomly for equal values from the minmax.
      * @param successors
      * @return
      */
@@ -74,7 +74,7 @@ public class AI {
 
 
     /**
-     * Implements the minimax algorithm with alpha-beta pruning
+     * Implements the minimax algorithm with alpha-beta pruning set the alpha and the beta
      * @param node
      * @param depth
      * @return minimax score associated with node
