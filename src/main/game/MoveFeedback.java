@@ -13,8 +13,8 @@ public enum MoveFeedback {
 
     private final String name;
 
-    MoveFeedback(String s) {
-        name = s;
+    MoveFeedback(String str) {
+        name = str;
     }
 
     public String toString() {

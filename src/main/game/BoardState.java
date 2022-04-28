@@ -8,7 +8,6 @@ public class BoardState {
 
     // side length of the board
     public static final int SIDE_LENGTH = 8;
-    public static final int NO_SQUARES = SIDE_LENGTH*SIDE_LENGTH; // 8 x 8
     // state of the board
     Piece[][] state;
     // origin and destination position of the most recent move

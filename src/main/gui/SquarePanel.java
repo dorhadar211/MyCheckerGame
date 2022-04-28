@@ -24,7 +24,6 @@ public class SquarePanel extends JPanel {
         color = Color.GRAY;
     }
 
-
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         g.setColor(color);

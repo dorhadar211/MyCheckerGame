@@ -6,8 +6,6 @@ public class Settings{
 
     public static pColor AIpColor = pColor.BLACK;
     public static boolean helpMode = true;
-    public static boolean hintMode = false;
-    public static boolean dragDrop = false;
     public static int AiMinPauseDurationInMs = 800;
     public static int squareSize = 80;
     public static int checkerWidth = 5*squareSize/6;

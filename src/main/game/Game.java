@@ -73,7 +73,6 @@ public class Game{
         else{
             return MoveFeedback.PIECE_BLOCKED;
         }
-
     }
 
     public ArrayList<BoardState> getValidMoves(int posX,int posY) {

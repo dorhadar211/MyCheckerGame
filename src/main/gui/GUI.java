@@ -21,8 +21,6 @@ public class GUI extends JFrame{
     private JPanel checkerboardPanel;
     private JPanel contentPane;
     private JTextArea textBox;
-    // hint feature
-    private BoardState hintMove;
     private List<ArrayList<Integer>> helpMoves;
     private HashMap<Integer, Integer> difficultyMapping;
 
@@ -39,11 +37,7 @@ public class GUI extends JFrame{
         settingsPopup();
         game = new Game();
         possibleMoves = new ArrayList<>();
-        hintMove = null;
         setup();
-        if (main.gui.Settings.hintMode){
-            onHintClick();
-        }
     }
 
     /**
@@ -63,7 +57,6 @@ public class GUI extends JFrame{
         difficultyButtonGroup.add(d2);
         difficultyButtonGroup.add(d3);
         difficultyButtonGroup.add(d4);
-        // force takes option
         d1.setSelected(true);
         // add components to panel
         panel.add(text1);
@@ -224,13 +217,10 @@ public class GUI extends JFrame{
         //remove view
         JMenu viewMenu = new JMenu("View");
         JRadioButtonMenuItem viewItemHelpMode = new JRadioButtonMenuItem("Help mode");
-        JRadioButtonMenuItem viewItemHintMode = new JRadioButtonMenuItem("Hint mode");
         viewItemHelpMode.setSelected(main.gui.Settings.helpMode);
-        viewItemHintMode.setSelected(main.gui.Settings.hintMode);
         //remove help
         JMenu helpMenu = new JMenu("Help");
         JMenuItem rulesItem = new JMenuItem("Game Rules");
-        JMenuItem helpItemHint = new JMenuItem("Hint!");
         JMenuItem helpItemMovables = new JMenuItem("Show movable pieces");
 
         // add action listeners
@@ -264,18 +254,6 @@ public class GUI extends JFrame{
                 onHelpModeClick();
             }
         });
-        viewItemHintMode.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                onHintModeClick();
-            }
-        });
-        helpItemHint.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                onHintClick();
-            }
-        });
         helpItemMovables.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -283,14 +261,11 @@ public class GUI extends JFrame{
             }
         });
 
-
         // add components to menu bar
         fileMenu.add(restartItem);
         fileMenu.add(quitItem);
         editMenu.add(undoItem);
         viewMenu.add(viewItemHelpMode);
-        viewMenu.add(viewItemHintMode);
-        helpMenu.add(helpItemHint);
         helpMenu.add(helpItemMovables);
         helpMenu.add(rulesItem);
         menuBar.add(fileMenu);
@@ -302,17 +277,8 @@ public class GUI extends JFrame{
 
     /***************************************************************/
     /*********************** ON CLICK METHODS **********************/
-    private void onHintClick(){
-        if (!game.isGameOver()){
-            AI ai = new AI(10, Player.HUMAN);
-            helpMoves = null;
-            hintMove = ai.move(this.game.getState(), Player.HUMAN);
-            updateCheckerBoard();
-        }
-    }
 
     private void onHelpMovablesClick(){
-        hintMove = null;
         helpMoves = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> temp;
         for(BoardState obj : game.getState().getSuccessors()){
@@ -327,12 +293,6 @@ public class GUI extends JFrame{
     private void onHelpModeClick(){
         main.gui.Settings.helpMode = !main.gui.Settings.helpMode;
         System.out.println("help mode: " + main.gui.Settings.helpMode);
-    }
-
-    private void onHintModeClick(){
-        main.gui.Settings.hintMode = !main.gui.Settings.hintMode;
-        System.out.println("hint mode: " + main.gui.Settings.hintMode);
-        onHintClick();
     }
 
     /**
@@ -368,7 +328,6 @@ public class GUI extends JFrame{
      */
     private void onGhostButtonClick(ActionEvent actionEvent){
         if (!game.isGameOver() && game.getTurn() == Player.HUMAN){
-            hintMove = null;
             helpMoves = null;
             GhostButton button = (GhostButton) actionEvent.getSource();
             game.playerMove(button.getBoardstate());
@@ -422,10 +381,6 @@ public class GUI extends JFrame{
                 if (!game.isGameOver() && game.getTurn() == Player.AI){
                     aiMove();
                 }
-                else if (main.gui.Settings.hintMode){
-                    // in hint mode, display hint after AI move
-                    onHintClick();
-                }
             }
         });
     }
@@ -437,14 +392,14 @@ public class GUI extends JFrame{
     {
         Object[] options = {"Yes",
                 "No", };
-        int n = JOptionPane.showOptionDialog(this, "Are you sure you want to restart?",
+        int res = JOptionPane.showOptionDialog(this, "Are you sure you want to restart?",
                 "Restart game? ",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,
                 options,
                 options[1]);
-        if (n == 0){
+        if (res == 0){
             start();
         }
     }
@@ -508,8 +463,5 @@ public class GUI extends JFrame{
     private void onUndoClick(){
         game.undo();
         updateCheckerBoard();
-        if (main.gui.Settings.hintMode){
-            onHintClick();
-        }
     }
 }
