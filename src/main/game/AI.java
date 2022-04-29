@@ -15,11 +15,6 @@ public class AI {
         player = Player.AI;
     }
 
-    public AI(int depth, Player player){
-        this.depth = depth;
-        this.player = player;
-    }
-
     public BoardState move(BoardState state, Player player){
         if (state.getTurn() == player){
             ArrayList<BoardState> successors = state.getSuccessors();

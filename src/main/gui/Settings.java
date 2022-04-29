@@ -2,17 +2,17 @@ package main.gui;
 
 import main.game.Player;
 
-public class Settings{
+public final class Settings{
 
     public static pColor AIpColor = pColor.BLACK;
-    public static boolean helpMode = true;
     public static int AiMinPauseDurationInMs = 800;
     public static int squareSize = 80;
     public static int checkerWidth = 5*squareSize/6;
     public static int checkerHeight = 5*squareSize/6;
-    public static int ghostButtonWidth = 30*squareSize/29;
-    public static int ghostButtonHeight = 5*squareSize/6;
+    public static int HelpButtonWidth = 30*squareSize/29;
+    public static int HelpButtonHeight = 5*squareSize/6;
 
+    private Settings(){}
     /**
      * Gets the correct pColor (black/white) for the given player
      * @param player

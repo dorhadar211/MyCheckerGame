@@ -23,48 +23,6 @@ public class Game{
         }
     }
 
-    public MoveFeedback playerMove(int fromPosX,int fromPosY, int dx, int dy){
-        int toPosX = fromPosX+dx;
-        int toPosY = fromPosY+dy;
-        if (toPosX > getState().SIDE_LENGTH || toPosY > getState().SIDE_LENGTH ||toPosX < 0 || toPosY < 0){
-            return MoveFeedback.NOT_ON_BOARD;
-        }
-        // check for forced jumped
-        ArrayList<BoardState> jumpSuccessors = this.state.peek().getSuccessors(true);
-        boolean jumps = jumpSuccessors.size() > 0;
-        if (jumps){
-            for (BoardState succ : jumpSuccessors){
-                if ((succ.getFromPosX() == fromPosX && succ.getFromPosY() == fromPosY) && (succ.getToPosX() == toPosX && succ.getToPosY() == toPosY)){
-                    updateState(succ);
-                    return MoveFeedback.SUCCESS;
-                }
-            }
-            return MoveFeedback.FORCED_JUMP;
-        }
-        // check diagonal
-        if (Math.abs(dx) != Math.abs(dy)){
-            return MoveFeedback.NOT_DIAGONAL;
-        }
-        // check for move onto piece
-        if (this.getState().state[toPosY][toPosX] != null){
-            return MoveFeedback.NO_FREE_SPACE;
-        }
-        // check for non-jump moves
-        ArrayList<BoardState> nonJumpSuccessors = this.state.peek().getSuccessors(fromPosY,fromPosX, false);
-        for (BoardState succ : nonJumpSuccessors){
-            if ((succ.getFromPosX() == fromPosX && succ.getFromPosY() == fromPosY) && (succ.getToPosX() == toPosX && succ.getToPosY() == toPosY)){
-                updateState(succ);
-                return MoveFeedback.SUCCESS;
-            }
-        }    if (dy > 1){
-            return MoveFeedback.NO_BACKWARD_MOVES_FOR_SINGLES;
-        }
-        if (Math.abs(dx)== 2){
-            return MoveFeedback.ONLY_SINGLE_DIAGONALS;
-        }
-        return MoveFeedback.UNKNOWN_INVALID;
-    }
-
     public MoveFeedback moveFeedbackClick(){
         ArrayList<BoardState> jumpSuccessors = this.state.peek().getSuccessors(true);
         if (jumpSuccessors.size() > 0){

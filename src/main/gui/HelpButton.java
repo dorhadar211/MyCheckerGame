@@ -12,11 +12,11 @@ import main.game.BoardState;
 /**
  * Button representing a possible move for a player
  */
-public class GhostButton extends JButton{
+public class HelpButton extends JButton{
 
     private BoardState boardstate;
 
-    public GhostButton(BoardState state){
+    public HelpButton(BoardState state){
         super();
         this.boardstate = state;
         this.setBorder(BorderFactory.createEmptyBorder());
@@ -27,19 +27,13 @@ public class GhostButton extends JButton{
     private void setIcon(){
         BufferedImage buttonIcon = null;
         try{
-            if(Settings.helpMode){
-                buttonIcon = ImageIO.read(new File("images/dottedcircle.png"));
-
-            }
-            else{
-                buttonIcon = ImageIO.read(new File("images/dottedcircleblack.png"));
-            }
+            buttonIcon = ImageIO.read(new File("images/dottedcircle.png"));
         }
         catch (IOException e){
-            System.out.println(e.toString());
+            System.out.println(e);
         }
         if (buttonIcon != null){
-            Image resized = buttonIcon.getScaledInstance(Settings.ghostButtonWidth,Settings.ghostButtonHeight,100);
+            Image resized = buttonIcon.getScaledInstance(Settings.HelpButtonWidth,Settings.HelpButtonHeight,100);
             ImageIcon icon = new ImageIcon(resized);
             this.setIcon(icon);
         }

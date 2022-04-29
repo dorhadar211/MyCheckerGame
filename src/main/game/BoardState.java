@@ -35,23 +35,17 @@ public class BoardState {
         BoardState bs = new BoardState();
         bs.turn = Settings.FIRSTMOVE;
         for (int i = 0; i < BoardState.SIDE_LENGTH; i++){
-            for (int j =0; j<BoardState.SIDE_LENGTH;j++) {
-                // place on black squares only
-                if ((j+i) % 2 == 1) {
+            for (int j =0; j<BoardState.SIDE_LENGTH;j+=2) {
                     // AI pieces in first 3 rows
                     if (i < 3) {
-                        bs.state[i][j] = new Piece(Player.AI, false);
+                        bs.state[i][(j+1)-i%2] = new Piece(Player.AI, false);
                     }
                     // Human pieces in last 3 rows
                     else if (i > 4) {
-                        bs.state[i][j] = new Piece(Player.HUMAN, false);
+                        bs.state[i][(j+1)-i%2] = new Piece(Player.HUMAN, false);
                     }
-                }
             }
         }
-        // count initial pieces (generalizable, not hard-coded)
-//        int aiCount = (int) Arrays.stream(bs.state).filter(x -> x != null).filter(x -> x.getPlayer() == Player.AI).count();
-//        int humanCount = (int) Arrays.stream(bs.state).filter(x -> x != null).filter(x -> x.getPlayer() == Player.HUMAN).count();
         int aiCount = 12;
         int humanCount = 12;
         bs.pieceCount = new HashMap<>();
@@ -73,8 +67,6 @@ public class BoardState {
 
     /**
      * Compute heuristic indicating how desirable this state is to a given player.
-     * @param player
-     * @return
      */
     public int computeHeuristic(Player player){
         return heuristic1(player);
@@ -97,11 +89,8 @@ public class BoardState {
         return this.pieceCount.get(player) + this.kingCount.get(player);
     }
 
-
-
     /**
      * Gets valid successor states for a player
-     * @return
      */
     public ArrayList<BoardState> getSuccessors(){
         // compute jump successors
@@ -118,8 +107,6 @@ public class BoardState {
 
     /**
      * Get valid jump or non-jump successor states for a player
-     * @param jump
-     * @return
      */
     public ArrayList<BoardState> getSuccessors(boolean jump){
         ArrayList<BoardState> result = new ArrayList<>();
@@ -137,8 +124,6 @@ public class BoardState {
 
     /**
      * Gets valid successor states for a specific position on the board
-     * @param position
-     * @return
      */
     public ArrayList<BoardState> getSuccessors(int positionRow,int positionColumn){
             // compute jump successors GLOBALLY
@@ -155,7 +140,6 @@ public class BoardState {
 
     /**
      * Get valid jump or non-jump successor states for a specific piece on the board.
-     * @param position
      * @return
      */
     public ArrayList<BoardState> getSuccessors(int positionRow,int positionColumn, boolean jump){
@@ -173,9 +157,6 @@ public class BoardState {
 
     /**
      * Gets valid non-jump moves at a given position for a given piece
-     * @param piece
-     * @param position
-     * @return
      */
     private ArrayList<BoardState> nonJumpSuccessors(Piece piece, int positionRow,int positionColumn){
         ArrayList<BoardState> result = new ArrayList<>();
@@ -188,7 +169,6 @@ public class BoardState {
                 if (isValid(newY, newX)) {
                     // new position available?
                     if (getPiece(newY, newX) == null) {
-//                        int newpos = SIDE_LENGTH*newY + newX;
                         result.add(createNewState(positionRow, positionColumn, newY, newX, piece, false, dy,dx));
                     }
                 }
@@ -199,9 +179,6 @@ public class BoardState {
 
     /**
      * Gets valid jump moves at a given position for a given piece
-     * @param piece
-     * @param position
-     * @return
      */
     private ArrayList<BoardState> jumpSuccessors(Piece piece, int positionY , int positionX){
         ArrayList<BoardState> result = new ArrayList<>();
@@ -209,8 +186,6 @@ public class BoardState {
         if ((doublejumpPosX > 0 ||doublejumpPosY >0) && (positionX != doublejumpPosX && positionY != doublejumpPosY)){
             return result;
         }
-//        int x = position % SIDE_LENGTH;
-//        int y = position / SIDE_LENGTH;
         // loop through allowed movement directions
         for (int dx : piece.getXMovements()){
             for (int dy : piece.getYMovements()){
@@ -225,7 +200,6 @@ public class BoardState {
                         if (isValid(newY, newX)){
                             // jump position available?
                             if (getPiece(newY,newX) == null) {
-//                                int newpos = SIDE_LENGTH*newY + newX;
                                 result.add(createNewState(positionY,positionX, newY,newX, piece, true, dy, dx));
                             }
                         }
@@ -283,7 +257,6 @@ public class BoardState {
 
     /**
      * Gets the destination position of the most recent move.
-     * @return
      */
     public int getToPosX(){
         return this.toPosX;
@@ -295,7 +268,6 @@ public class BoardState {
 
     /**
      * Gets the destination position of the most recent move.
-     * @return
      */
     public int getFromPosX(){
         return this.fromPosX;
@@ -308,7 +280,6 @@ public class BoardState {
 
     /**
      * Gets the player whose turn it is
-     * @return
      */
     public Player getTurn() {
         return turn;
@@ -316,7 +287,6 @@ public class BoardState {
 
     /**
      * Is the board in a game over state?
-     * @return
      */
     public boolean isGameOver(){
         return (pieceCount.get(Player.AI) == 0 || pieceCount.get(Player.HUMAN) == 0);
@@ -324,8 +294,6 @@ public class BoardState {
 
     /**
      * Get player piece at given position.
-     * @param i Position in board.
-     * @return
      */
     public Piece getPiece(int i,int j){
         return state[i][j];
@@ -333,9 +301,6 @@ public class BoardState {
 
     /**
      * Check if grid indices are valid
-     * @param y
-     * @param x
-     * @return
      */
     private boolean isValid(int y, int x){
         return (0 <= y) && (y < SIDE_LENGTH) && (0 <= x) && (x < SIDE_LENGTH);

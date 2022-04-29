@@ -80,6 +80,10 @@ public class GUI extends JFrame{
             }
             System.out.println("AI depth = " + Settings.AI_DEPTH);
         }
+        else {
+            this.dispose();
+            System.exit(0);
+        }
     }
 
 
@@ -120,7 +124,7 @@ public class GUI extends JFrame{
         checkerboardPanel.removeAll();
         addPieces();
         addSquares();
-        addGhostButtons();
+        addHelpButtons();
         checkerboardPanel.setVisible(true);
         checkerboardPanel.repaint();
         this.pack();
@@ -174,17 +178,17 @@ public class GUI extends JFrame{
     }
 
     /**
-     * Add "ghost buttons" showing possible moves for the player
+     * Add "help buttons" showing possible moves for the player
      */
-    private void addGhostButtons(){
+    private void addHelpButtons(){
         for (BoardState state : possibleMoves){
             int newPosX = state.getToPosX();
             int newPosY = state.getToPosY();
-            GhostButton button = new GhostButton(state);
+            HelpButton button = new HelpButton(state);
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
-                    onGhostButtonClick(actionEvent);
+                    onHelpButtonClick(actionEvent);
                 }
             });
             squares[newPosY][newPosX].add(button);
@@ -212,12 +216,8 @@ public class GUI extends JFrame{
         JMenu fileMenu = new JMenu("Game");
         JMenuItem restartItem = new JMenuItem("Restart");
         JMenuItem quitItem = new JMenuItem("Quit");
-        JMenu editMenu = new JMenu("Edit");
+        JMenu editMenu = new JMenu("History");
         JMenuItem undoItem = new JMenuItem("Undo");
-        //remove view
-        JMenu viewMenu = new JMenu("View");
-        JRadioButtonMenuItem viewItemHelpMode = new JRadioButtonMenuItem("Help mode");
-        viewItemHelpMode.setSelected(main.gui.Settings.helpMode);
         //remove help
         JMenu helpMenu = new JMenu("Help");
         JMenuItem rulesItem = new JMenuItem("Game Rules");
@@ -248,12 +248,6 @@ public class GUI extends JFrame{
                 onUndoClick();
             }
         });
-        viewItemHelpMode.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                onHelpModeClick();
-            }
-        });
         helpItemMovables.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -265,12 +259,10 @@ public class GUI extends JFrame{
         fileMenu.add(restartItem);
         fileMenu.add(quitItem);
         editMenu.add(undoItem);
-        viewMenu.add(viewItemHelpMode);
         helpMenu.add(helpItemMovables);
         helpMenu.add(rulesItem);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
-        menuBar.add(viewMenu);
         menuBar.add(helpMenu);
         this.setJMenuBar(menuBar);
     }
@@ -288,11 +280,6 @@ public class GUI extends JFrame{
             helpMoves.add(temp);
         }
         updateCheckerBoard();
-    }
-
-    private void onHelpModeClick(){
-        main.gui.Settings.helpMode = !main.gui.Settings.helpMode;
-        System.out.println("help mode: " + main.gui.Settings.helpMode);
     }
 
     /**
@@ -323,13 +310,13 @@ public class GUI extends JFrame{
     }
 
     /**
-     * Occurs when user clicks to move checker piece to new (ghost) location.
+     * Occurs when user clicks to move checker piece to new (help) location.
      * @param actionEvent
      */
-    private void onGhostButtonClick(ActionEvent actionEvent){
+    private void onHelpButtonClick(ActionEvent actionEvent){
         if (!game.isGameOver() && game.getTurn() == Player.HUMAN){
             helpMoves = null;
-            GhostButton button = (GhostButton) actionEvent.getSource();
+            HelpButton button = (HelpButton) actionEvent.getSource();
             game.playerMove(button.getBoardstate());
             possibleMoves = new ArrayList<>();
             updateCheckerBoard();
