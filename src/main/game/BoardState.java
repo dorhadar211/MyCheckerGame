@@ -82,10 +82,10 @@ public class BoardState {
             return Integer.MIN_VALUE;
         }
         // difference between piece counts with kings counted twice
-        return pieceScore(player) - pieceScore(player.getOpposite());
+        return playerScore(player) - playerScore(player.getOpposite());
     }
 
-    private int pieceScore(Player player){
+    private int playerScore(Player player){
         return this.pieceCount.get(player) + this.kingCount.get(player);
     }
 

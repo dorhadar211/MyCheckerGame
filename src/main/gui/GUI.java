@@ -5,12 +5,15 @@ import main.game.Settings;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class GUI extends JFrame{
@@ -65,7 +68,7 @@ public class GUI extends JFrame{
         panel.add(d3);
         panel.add(d4);
         // pop up
-        int result = JOptionPane.showConfirmDialog(null, panel, "Settings",
+        int result = JOptionPane.showConfirmDialog(null, panel, "Game settings",
                      JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         // process results
         if(result == JOptionPane.OK_OPTION){
@@ -92,6 +95,12 @@ public class GUI extends JFrame{
      */
     public void setup()
     {
+        this.setTitle("Checkers");
+        try {
+            this.setIconImage(ImageIO.read(new File("images/icon.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         setupMenuBar();
         contentPane = new JPanel();
         checkerboardPanel = new JPanel(new GridBagLayout());
