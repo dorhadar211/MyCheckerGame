@@ -15,14 +15,12 @@ public class AI {
         player = Player.AI;
     }
 
-    public BoardState move(BoardState state, Player player){
-        if (state.getTurn() == player){
-            ArrayList<BoardState> successors = state.getSuccessors();
+    public BoardState move(BoardState state){
+        ArrayList<BoardState> successors = state.getSuccessors();
+            if (successors.size() == 1){
+                return successors.get(0);
+            }
             return minimaxMove(successors);
-        }
-        else{
-            throw new RuntimeException("Cannot generate moves for player if it's not their turn");
-        }
     }
 
     /**
@@ -31,9 +29,6 @@ public class AI {
      * @return
      */
     private BoardState minimaxMove(ArrayList<BoardState> successors){
-        if (successors.size() == 1){
-            return successors.get(0);
-        }
         int bestScore = Integer.MIN_VALUE;
         ArrayList<BoardState> equalBests = new ArrayList<>();
         for (BoardState succ : successors){
@@ -45,9 +40,6 @@ public class AI {
             if (val == bestScore){
                 equalBests.add(succ);
             }
-        }
-        if(equalBests.size() > 1){
-            System.out.println(player.toString() + " choosing random best move");
         }
         // choose randomly from equally scoring best moves
         return randomMove(equalBests);

@@ -11,28 +11,15 @@ public class Game{
     private String winner;
     private int onlyKingsMoveCounter;
 
+    private boolean playerBlocked;
+
     public Game(){
         memory = Settings.UNDO_MEMORY;
         state = new Stack<>();
         state.push(BoardState.InitialState());
         ai = new AI();
         onlyKingsMoveCounter =0;
-    }
-
-    public void playerMove(BoardState newState){
-        if (!isGameOver() && state.peek().getTurn() == Player.HUMAN){
-            if(this.state.peek().pieceCount.get(Player.AI)==this.state.peek().kingCount.get(Player.AI)
-                    && this.state.peek().pieceCount.get(Player.HUMAN)==this.state.peek().kingCount.get(Player.HUMAN) ){
-                if(this.state.peek().kingCount.get(Player.HUMAN) == newState.kingCount.get(Player.HUMAN)){
-                    this.onlyKingsMoveCounter++;
-                    System.out.println(onlyKingsMoveCounter);
-                }
-                else {
-                    this.onlyKingsMoveCounter =0;
-                }
-            }
-            updateState(newState);
-        }
+        playerBlocked = false;
     }
 
     public MoveFeedback moveFeedbackClick(){
@@ -49,22 +36,44 @@ public class Game{
         return state.peek().getSuccessors(posY,posX);
     }
 
-    public void aiMove(){
-        // update state with AI move
-        if (!isGameOver() && state.peek().getTurn() == Player.AI){
-            BoardState newState = ai.move(this.state.peek(), Player.AI);
+    public void playerMove(BoardState newState){
+        if (!isGameOver() && state.peek().getTurn() == Player.HUMAN){
             if(this.state.peek().pieceCount.get(Player.AI)==this.state.peek().kingCount.get(Player.AI)
                     && this.state.peek().pieceCount.get(Player.HUMAN)==this.state.peek().kingCount.get(Player.HUMAN) ){
-                if(this.state.peek().kingCount.get(Player.AI) == newState.kingCount.get(Player.AI)){
+                if(this.state.peek().kingCount.get(Player.HUMAN) == newState.kingCount.get(Player.HUMAN)){
                     this.onlyKingsMoveCounter++;
-                    System.out.println(onlyKingsMoveCounter);
                 }
                 else {
                     this.onlyKingsMoveCounter =0;
                 }
             }
             updateState(newState);
+            ArrayList<BoardState> successors = newState.getSuccessors();
+            if(successors.size()==0){
+                this.playerBlocked =true;
+            }
         }
+    }
+
+    public void aiMove(){
+        // update state with AI move
+            if (!isGameOver() && state.peek().getTurn() == Player.AI){
+                BoardState newState = ai.move(this.state.peek());
+                if(this.state.peek().pieceCount.get(Player.AI)==this.state.peek().kingCount.get(Player.AI)
+                        && this.state.peek().pieceCount.get(Player.HUMAN)==this.state.peek().kingCount.get(Player.HUMAN) ){
+                    if(this.state.peek().kingCount.get(Player.AI) == newState.kingCount.get(Player.AI)){
+                        this.onlyKingsMoveCounter++;
+                    }
+                    else {
+                        this.onlyKingsMoveCounter =0;
+                    }
+                }
+                updateState(newState);
+                ArrayList<BoardState> successors = newState.getSuccessors();
+                if(successors.size()==0){
+                    this.playerBlocked =true;
+                }
+            }
     }
 
     private void updateState(BoardState newState){
@@ -96,6 +105,15 @@ public class Game{
         }
         else if (this.onlyKingsMoveCounter>=20) {
             this.winner = "TIE";
+            return true;
+        }
+        else if (playerBlocked == true) {
+            if(state.peek().getTurn() == Player.HUMAN){
+                this.winner ="AI";
+            }
+            else{
+                this.winner ="HUMAN";
+            }
             return true;
         }
         return false;
