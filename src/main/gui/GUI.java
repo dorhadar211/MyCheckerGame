@@ -28,7 +28,10 @@ public class GUI extends JFrame{
     private List<ArrayList<Integer>> helpMoves;
     private HashMap<Integer, Integer> difficultyMapping;
 
-    public GUI(){
+    public static void startGame(){
+        GUI gui = new GUI();
+    }
+    private GUI(){
         difficultyMapping = new HashMap<>();
         difficultyMapping.put(1,1);
         difficultyMapping.put(2, 5);
@@ -296,25 +299,29 @@ public class GUI extends JFrame{
      * @param actionEvent
      */
     private void onPieceClick(ActionEvent actionEvent){
-        if(game.getTurn() == Player.HUMAN ){
-            CheckerButton button = (CheckerButton) actionEvent.getSource();
-            int posX = button.getPositionX();
-            int posY = button.getPositionY();
-            if(button.getPiece().getPlayer() == Player.HUMAN){
-                possibleMoves = game.getValidMoves(posX,posY);
-                updateCheckerBoard();
-                if (possibleMoves.size() == 0){
-                    MoveFeedback feedback = game.moveFeedbackClick();
-                    updateText(feedback.toString());
-                    if (feedback == MoveFeedback.FORCED_JUMP){
-                        // show movable jump pieces
-                        onHelpMovablesClick();
+        try {
+            if (game.getTurn() == Player.HUMAN) {
+                CheckerButton button = (CheckerButton) actionEvent.getSource();
+                int posX = button.getPositionX();
+                int posY = button.getPositionY();
+                if (button.getPiece().getPlayer() == Player.HUMAN) {
+                    possibleMoves = game.getValidMoves(posX, posY);
+                    updateCheckerBoard();
+                    if (possibleMoves.size() == 0) {
+                        MoveFeedback feedback = game.moveFeedbackClick();
+                        updateText(feedback.toString());
+                        if (feedback == MoveFeedback.FORCED_JUMP) {
+                            // show movable jump pieces
+                            onHelpMovablesClick();
+                        }
+                    } else {
+                        updateText("");
                     }
                 }
-                else{
-                    updateText("");
-                }
             }
+        }
+        catch (Exception err){
+            System.out.println("Dont click too fast");
         }
     }
 
