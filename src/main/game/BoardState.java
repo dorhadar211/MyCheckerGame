@@ -1,7 +1,6 @@
 package main.game;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class BoardState {
@@ -22,7 +21,7 @@ public class BoardState {
     private Player turn;
     // track number of human/AI pieces on board
     public HashMap<Player, Integer> pieceCount;
-    private HashMap<Player, Integer> kingCount;
+    public HashMap<Player, Integer> kingCount;
 
     public BoardState(){
         state = new Piece[BoardState.SIDE_LENGTH][BoardState.SIDE_LENGTH];
@@ -169,7 +168,7 @@ public class BoardState {
                 if (isValid(newY, newX)) {
                     // new position available?
                     if (getPiece(newY, newX) == null) {
-                        result.add(createNewState(positionRow, positionColumn, newY, newX, piece, false, dy,dx));
+                        result.add(createNewState(positionRow, positionColumn, newY, newX, piece, false, dy,dx,false));
                     }
                 }
             }
@@ -200,7 +199,7 @@ public class BoardState {
                         if (isValid(newY, newX)){
                             // jump position available?
                             if (getPiece(newY,newX) == null) {
-                                result.add(createNewState(positionY,positionX, newY,newX, piece, true, dy, dx));
+                                result.add(createNewState(positionY,positionX, newY,newX, piece, true, dy, dx, getPiece(newY-dy, newX-dx).isKing()));
                             }
                         }
                     }
@@ -210,13 +209,13 @@ public class BoardState {
         return result;
     }
 
-    private BoardState createNewState(int oldRowPos,int oldColPos, int newRowPos,int newColPos, Piece piece, boolean jumped, int dy, int dx){
+    private BoardState createNewState(int oldRowPos,int oldColPos, int newRowPos,int newColPos, Piece piece, boolean jumped, int dy, int dx , boolean isJumpOverKing){
         BoardState result = this.deepCopy();
         result.pieceCount = new HashMap<>(pieceCount);
         result.kingCount = new HashMap<>(kingCount);
         // check if king position
         boolean kingConversion = false;
-        if (isKingPosition(newRowPos, piece.getPlayer())){
+        if (!piece.isKing() && isKingPosition(newRowPos, piece.getPlayer())){
             piece = new Piece(piece.getPlayer(), true);
             kingConversion = true;
             // increase king count
@@ -236,6 +235,9 @@ public class BoardState {
             // remove captured piece
             result.state[newRowPos-dy][newColPos-dx] = null;
             result.pieceCount.replace(oppPlayer, result.pieceCount.get(oppPlayer) - 1);
+            if(isJumpOverKing){
+                result.kingCount.replace(oppPlayer, result.kingCount.get(oppPlayer) - 1);
+            }
             // is another jump available? (not allowed if just converted into king)
             if (result.jumpSuccessors(piece, newRowPos,newColPos).size() > 0 && kingConversion == false){
                 // don't swap turns

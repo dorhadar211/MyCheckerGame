@@ -7,12 +7,13 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -227,7 +228,6 @@ public class GUI extends JFrame{
         JMenuItem quitItem = new JMenuItem("Quit");
         JMenu editMenu = new JMenu("History");
         JMenuItem undoItem = new JMenuItem("Undo");
-        //remove help
         JMenu helpMenu = new JMenu("Help");
         JMenuItem rulesItem = new JMenuItem("Game Rules");
         JMenuItem helpItemMovables = new JMenuItem("Show movable pieces");
@@ -425,32 +425,11 @@ public class GUI extends JFrame{
      * Open help dialog.
      */
     private void onRulesClick(){
-
-        String message =
-                "1. Moves are allowed only on the dark squares, so pieces always move diagonally. Single " +
-                "pieces are always limited to forward moves (toward the opponent). <br /> <br /> " +
-
-                "2. A piece making a non-capturing move (not involving a jump) may move only one square. <br /> <br />"+
-
-                "3. A piece making a capturing move (a jump) leaps over one of the opponent's pieces, landing in a " +
-                "straight diagonal line on the other side. Only one piece may be captured in a single jump; however, " +
-                "multiple jumps are allowed during a single turn. <br /> <br />" +
-
-                        "4. When a piece is captured, it is removed from the board. <br /> <br />" +
-                "5. If a player is able to make a capture, there is no option; the jump must be made. If more than " +
-                   "one capture is available, the player is free to choose whichever he or she prefers. <br /> <br />" +
-
-                "6. When a piece reaches the furthest row from the player who controls that piece, it is crowned and " +
-                        "becomes a king. <br /> <br />" +
-                "7. Kings are limited to moving diagonally but may move both forward and backward. <br /> <br />" +
-                "8. Kings may combine jumps in several directions, forward and backward, on the same turn. Single " +
-                        "pieces may shift direction diagonally during a multiple capture turn, but must always jump " +
-                        "forward (toward the opponent).";
-
-        JOptionPane.showMessageDialog(this,
-                "<html><body><p style='width: 400px;'>"+message+"</p></body></html>",
-                "",
-                JOptionPane.INFORMATION_MESSAGE );
+        try {
+            Desktop.getDesktop().browse(new URI("https://www.ultraboardgames.com/checkers/game-rules.php"));
+        } catch (IOException | URISyntaxException e1) {
+            e1.printStackTrace();
+        }
     }
 
     /**
